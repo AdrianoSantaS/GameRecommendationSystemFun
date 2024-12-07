@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>RAWG Games List</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+	<div class="container mt-5">
+		<button class="btn btn-secondary back-btn" onclick="goBack()">
+			<i class="fas fa-arrow-left"></i> Back
+		</button>
+
+		<h1>Game List</h1>
+		<div th:each="game : ${games}">
+			<div>
+				<h2 th:text="${game.name}"></h2>
+				<img th:src="${game.backgroundImage}" alt="Game Image" width="300" />
+				<p>Rating: <span th:text="${game.rating}"></span></p>
+				<p>Review Count: <span th:text="${game.ratingsCount}"></span></p>
+				<p>Playtime (hours): <span th:text="${game.playtime}"></span></p>
+				<p>Release Date: <span th:text="${game.released}"></span></p>
+
+				<h3>Platforms:</h3>
+				<ul>
+					<li th:each="platformDetail : ${game.platforms}">
+						<span th:text="${platformDetail.platform.name}"></span>
+					</li>
+				</ul>
+
+				<h3>Genres:</h3>
+				<ul>
+					<li th:each="genre : ${game.genres}" th:text="${genre.name}"></li>
+				</ul>
+			</div>
+			<hr />
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		function goBack() {
+			window.history.back();
+		}
+	</script>
+</body>
+
+</html>

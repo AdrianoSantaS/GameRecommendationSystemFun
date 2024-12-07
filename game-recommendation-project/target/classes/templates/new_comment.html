@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Add Comment</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<style>
+		.back-btn {
+			margin-bottom: 20px;
+		}
+
+		.title-container {
+			margin-bottom: 20px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container">
+		<button class="btn btn-secondary mt-4" onclick="goBack()">
+			<i class="fas fa-arrow-left"></i> Back
+		</button>
+
+		<h2 class="mt-4 mb-4">Add Comment for Game: <span th:text="${game.nameGame}"></span></h2>
+
+		<!-- Comment Form -->
+		<div class="card mb-4">
+			<div class="card-body">
+				<h5 class="card-title">Comment Form</h5>
+
+				<form id="commentForm" th:action="@{/comments/add}" method="post">
+					<input type="hidden" name="gameId" th:value="${game.id}" />
+
+					<div class="form-group">
+						<label for="commentText">Comment</label>
+						<textarea class="form-control" id="commentText" name="commentText" required></textarea>
+					</div>
+
+					<div class="form-group">
+						<label for="feedbackType">Feedback Type</label>
+						<select class="form-control" id="feedbackType" name="feedbackType" required>
+							<option value="like">Like</option>
+							<option value="dislike">Dislike</option>
+						</select>
+					</div>
+
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
+						Submit Comment
+					</button>
+				</form>
+			</div>
+		</div>
+
+		<!-- Confirmation Modal -->
+		<div id="confirmModal" class="modal fade" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Confirm Submission</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to submit this comment?</p>
+						<p class="text-danger">
+							Once submitted, the comment cannot be edited or deleted.
+						</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+						<button type="button" class="btn btn-primary" onclick="submitCommentForm()">Confirm
+							Submission</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+		<script th:inline="javascript">
+			function goBack() {
+				window.history.back();
+			}
+
+			function submitCommentForm() {
+				document.getElementById("commentForm").submit();
+			}
+		</script>
+
+	</div>
+
+</body>
+
+</html>

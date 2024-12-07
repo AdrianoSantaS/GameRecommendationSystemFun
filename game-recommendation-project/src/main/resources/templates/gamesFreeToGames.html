@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>FreeToGame Games</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+	<div class="container mt-4">
+		<h1 class="mb-4">FreeToGame Games</h1>
+
+		<div class="alert alert-info" role="alert">
+			The FreeToGame API is available for everyone to use without any restrictions. Please note our API is free to
+			use as long as you attribute <a href="https://www.freetogame.com" target="_blank">FreeToGame.com</a> as the
+			source of the data. We hope to improve the API over time.
+		</div>
+
+		<div class="container mt-5">
+			<button class="btn btn-secondary back-btn" onclick="goBack()">
+				<i class="fas fa-arrow-left"></i> Back
+			</button>
+		</div>
+
+		<div class="table-responsive mt-4">
+			<table class="table table-bordered">
+				<thead class="thead-dark">
+					<tr>
+						<th>ID</th>
+						<th>Thumbnail</th>
+						<th>Title</th>
+						<th>Short Description</th>
+						<th>Genre</th>
+						<th>Platform</th>
+						<th>Publisher</th>
+						<th>Developer</th>
+						<th>Release Date</th>
+						<th>Game URL</th>
+						<th>Profile</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="game : ${games}">
+						<td th:text="${game.id}"></td>
+						<td><img th:src="${game.thumbnail}" alt="Game Thumbnail" width="100"></td>
+						<td th:text="${game.title}"></td>
+						<td th:text="${game.shortDescription}"></td>
+						<td th:text="${game.genre}"></td>
+						<td th:text="${game.platform}"></td>
+						<td th:text="${game.publisher}"></td>
+						<td th:text="${game.developer}"></td>
+						<td th:text="${game.releaseDate}"></td>
+						<td><a th:href="${game.gameUrl}" target="_blank">View Game</a></td>
+						<td><a th:href="${game.freeToGameProfileUrl}" target="_blank">View Profile</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		function goBack() {
+			window.history.back();
+		}
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Game Recommendation System</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+	<style>
+		body {
+			background-color: #1a1a1a;
+			color: white;
+		}
+
+		.nav-link {
+			background-color: #006d77;
+			color: white;
+			border: 1px solid #006d77;
+			margin: 10px;
+		}
+
+		.sidebar {
+			background-color: #83c5be;
+			margin-top: 20px;
+			margin-left: 20px;
+			width: 200px;
+			position: absolute;
+			height: 100%;
+			overflow-y: auto;
+		}
+
+		.sidebar-sticky {
+			padding-top: 20px;
+		}
+
+		.user-icon {
+			margin-bottom: 10px;
+		}
+
+		.user-name {
+			font-weight: bold;
+			margin-bottom: 20px;
+		}
+
+		.card-columns {
+			column-count: 4;
+			max-width: 1500px;
+			column-gap: 100px;
+			margin: 5px;
+		}
+
+		.card {
+			background-color: #2a9d8f;
+			color: white;
+			border: 1px solid #006d77;
+			margin-bottom: 20px;
+		}
+
+		.game-image {
+			width: 200px;
+			height: 150px;
+			object-fit: cover;
+		}
+
+		.card-body {
+			color: white;
+		}
+
+		.card-title {
+			color: white;
+		}
+
+		.card-text {
+			color: white;
+		}
+
+		.modal-content {
+			background-color: #264653;
+			color: white;
+		}
+
+		.modal-header,
+		.modal-body,
+		.modal-footer {
+			border-color: #006d77;
+		}
+
+		.btn-primary {
+			background-color: #006d77;
+			border-color: #006d77;
+		}
+
+		.btn-primary:hover {
+			background-color: #83c5be;
+			border-color: #83c5be;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container-fluid">
+		<div class="row">
+			<!-- Left sidebar menu -->
+			<nav class="col-md-2 d-none d-md-block bg-secondary sidebar">
+				<div class="sidebar-sticky">
+					<div class="text-center mt-3">
+						<div th:if="${loggedInUser}">
+							<div class="user-icon">
+								<i class="fas fa-user-circle fa-3x text-white"></i>
+							</div>
+							<div class="user-name" th:text="'Welcome, ' + ${loggedInUser.name} + '!'"></div>
+						</div>
+					</div>
+					<ul class="nav flex-column">
+						<li class="nav-item" th:if="${loggedInUser.typePermission == 'ADMIN'}">
+							<a class="nav-link active btn btn-outline-light" href="/clients">
+								Client's data
+							</a>
+						</li>
+						<li class="nav-item" th:if="${loggedInUser.typePermission == 'ADMIN'}">
+							<a class="nav-link active btn btn-outline-light" href="/clients/listUsers">
+								User's data
+							</a>
+						</li>
+						<li class="nav-item" th:if="${loggedInUser.typePermission == 'ADMIN'}">
+							<a class="nav-link active btn btn-outline-light" href="/gameStore">
+								Games
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link active btn btn-outline-light" href="/gameStore/gamesRawg">
+								API RAWG
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link active btn btn-outline-light" href="/gameStore/gamesFreeToGames">
+								API FreeToGames
+							</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+
+			<!-- Main content -->
+			<main role="main" class="col-md-10 ml-sm-auto col-lg-10 px-4 mt-4">
+				<div class="text-right mb-3">
+					<form action="/logout" method="post">
+						<button type="submit" class="btn btn-danger">
+							Logout
+						</button>
+					</form>
+				</div>
+
+				<div class="card text-center mb-4">
+					<div class="card-body">
+						<h1 class="display-4">Welcome to the Game Recommendation System</h1>
+					</div>
+				</div>
+
+				<!-- Filter Section -->
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<select id="filterMenu" class="form-control">
+							<option value="name">Name</option>
+							<option value="category">Category</option>
+							<option value="description">Description</option>
+							<option value="allGames">All Games</option>
+						</select>
+					</div>
+					<div class="col-md-6">
+						<input type="text" id="searchInput" class="form-control" placeholder="Search...">
+					</div>
+					<div class="col-md-2">
+						<button class="btn btn-primary" onclick="filterGames()">Search</button>
+					</div>
+				</div>
+
+				<!-- Cards of Games -->
+				<div class="row" id="gamesList">
+					<div th:each="game : ${games}" class="col-md-4 game-card">
+						<div class="card">
+							<img th:src="@{'/images/' + ${game.id}}" alt="Game Image" class="game-image">
+							<div class="card-body">
+								<h5 th:text="${game.nameGame}" class="card-title"></h5>
+								<p th:text="${game.Category}" class="card-text"></p>
+								<p th:text="${game.Description}" class="card-text card-description"></p>
+								<p th:text="'Price: $' + ${game.price}" class="card-text"></p>
+								<button class="btn btn-primary" data-toggle="modal"
+									th:data-target="'#gameDetailsModal-' + ${game.id}">
+									View Details
+								</button>
+								<button class="btn btn-secondary"
+									th:if="${loggedInUser.typePermission == 'USER' and !hasCommented[game.id]}"
+									th:onclick="'checkCommentStatus(' + ${game.id} + '); return false;'">
+									Add Comment
+								</button>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modals for game details -->
+				<div th:each="game : ${games}" th:id="'gameDetailsModal-' + ${game.id}" class="modal fade" tabindex="-1"
+					role="dialog" aria-labelledby="'gameDetailsModalLabel-' + ${game.id}" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" th:id="'gameDetailsModalLabel-' + ${game.id}">Game
+									Details</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<h5 th:text="${game.nameGame}"></h5>
+								<p th:text="'Category: ' + ${game.Category}"></p>
+								<p th:text="'Price: $' + ${game.price}"></p>
+								<hr>
+								<h5>Game Description</h5>
+								<p th:text="${game.Description}"></p>
+								<hr>
+								<a class="btn btn-info" th:href="@{/comments/{gameId}(gameId=${game.id})}">
+									More >>
+								</a>
+								<hr>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+	<script>
+		var allCards = [];
+		var gamesList = document.getElementById('gamesList');
+
+		function checkCommentStatus(gameId) {
+			const hasCommented = /*[[${hasCommented[gameId]}]]*/ false;
+
+			if (hasCommented) {
+				document.getElementById('commentAlert').style.display = 'block';
+			} else {
+				window.location.href = '/comments/new?gameId=' + gameId;
+			}
+		}
+
+		window.onload = function () {
+			allCards = Array.from(document.querySelectorAll('.game-card'));
+			renderGames(allCards);
+		};
+
+		function renderGames(cards) {
+			gamesList.innerHTML = '';
+			cards.forEach(function (card) {
+				gamesList.appendChild(card);
+				card.style.display = 'block';
+			});
+		}
+
+		function filterGames() {
+			var filter = document.getElementById('filterMenu').value.toLowerCase();
+			var searchInput = document.getElementById('searchInput').value.trim();
+			var searchField = document.getElementById('searchInput');
+
+			if (filter === 'allgames') {
+				renderGames(allCards);
+				searchField.value = '';
+				searchField.disabled = true;
+				return;
+			}
+
+			searchField.disabled = false;
+
+			if (searchInput === '') {
+				alert("Please enter a search term.");
+				return;
+			}
+
+			var filteredCards = allCards.filter(function (card) {
+				var cardText = '';
+				if (filter === 'name') {
+					cardText = card.querySelector('.card-body .card-title').textContent.toLowerCase();
+				} else if (filter === 'category') {
+					cardText = card.querySelector('.card-body .card-text').textContent.toLowerCase();
+				} else if (filter === 'description') {
+					cardText = card.querySelector('.card-body .card-description').textContent.toLowerCase();
+				}
+
+
+				return cardText.includes(searchInput.toLowerCase());
+			});
+
+			renderGames(filteredCards);
+		}
+
+		document.getElementById('filterMenu').addEventListener('change', function () {
+			var filter = document.getElementById('filterMenu').value.toLowerCase();
+			var searchField = document.getElementById('searchInput');
+
+			if (filter === 'allgames') {
+				searchField.value = '';
+				searchField.disabled = true;
+				renderGames(allCards);
+			} else {
+				searchField.disabled = false;
+			}
+		});
+	</script>
+
+
+</body>
+
+</html>

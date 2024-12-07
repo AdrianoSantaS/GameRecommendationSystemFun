@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>List of Games</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<style>
+		.back-btn {
+			margin-right: 15px;
+		}
+
+		.title-container {
+			margin-bottom: 15px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div th:fragment="content">
+
+		<div style="margin-top: 20px;"></div>
+
+		<div class="text-center">
+			<h2>List of Games</h2>
+		</div>
+
+		<!-- Add game button -->
+		<div class="text-center">
+			<button class="btn btn-secondary back-btn" onclick="goBack()">
+				<i class="fas fa-arrow-left"></i> Back
+			</button>
+
+			<button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addGameModal">
+				Add Game
+			</button>
+		</div>
+
+		<!-- Center the table -->
+		<div class="table-responsive d-flex justify-content-center">
+			<!-- Games table -->
+			<table class="table table-bordered" style="width: 80%;">
+				<thead class="thead-dark">
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Category</th>
+						<th>Description</th>
+						<th>Price</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="game : ${games}">
+						<td th:text="${game.id}"></td>
+						<td th:text="${game.nameGame}"></td>
+						<td th:text="${game.Category}"></td>
+						<td th:text="${game.Description}"></td>
+						<td th:text="${game.price}"></td>
+						<td>
+							<button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+								th:data-target="'#deleteConfirmationModal-' + ${game.id}">
+								Delete
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- Modal to show game details -->
+		<div th:each="game : ${games}" th:id="'gameDetailsModal-' + ${game.id}" class="modal fade" tabindex="-1"
+			role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" th:text="'Game Details - ID ' + ${game.id}"></h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p th:text="'Name: ' + ${game.nameGame}"></p>
+						<p th:text="'Category: ' + ${game.Category}"></p>
+						<p th:text="'Description: ' + ${game.Description}"></p>
+						<p th:text="'Price: ' + ${game.price}"></p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal to add a new game -->
+		<div class="modal fade" id="addGameModal" tabindex="-1" role="dialog" aria-labelledby="addGameModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addGameModalLabel">Add Game</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form th:action="@{/gameStore/save}" method="post" enctype="multipart/form-data"
+							th:object="${game}">
+
+							<div class="form-group">
+								<label for="nameGame">Name</label>
+								<input type="text" class="form-control" id="nameGame" th:field="*{nameGame}" required>
+								<small class="text-danger" th:if="${#fields.hasErrors('nameGame')}"
+									th:errors="*{nameGame}"></small>
+							</div>
+
+							<div class="form-group">
+								<label for="Category">Category</label>
+								<select class="form-control" id="Category" th:field="*{Category}" required>
+									<option value="" disabled selected>Select a category</option>
+									<option value="FPS">FPS</option>
+									<option value="RPG">RPG</option>
+									<option value="Racing">Racing</option>
+									<option value="Fighting">Fighting</option>
+									<option value="Sport">Sport</option>
+									<option value="Terror">Terror</option>
+									<option value="Simulation">Simulation</option>
+									<option value="Strategy">Strategy</option>
+									<option value="Action">Action</option>
+									<option value="Others">Others</option>
+								</select>
+								<small class="text-danger" th:if="${#fields.hasErrors('Category')}"
+									th:errors="*{Category}"></small>
+							</div>
+
+
+							<div class="form-group">
+								<label for="Description">Description</label>
+								<textarea class="form-control" id="Description" th:field="*{Description}"
+									required></textarea>
+								<small class="text-danger" th:if="${#fields.hasErrors('Description')}"
+									th:errors="*{Description}"></small>
+							</div>
+
+							<div class="form-group">
+								<label for="price">Price</label>
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text">$</span>
+									</div>
+									<input type="text" class="form-control" id="price" th:field="*{price}"
+										pattern="[0-9]+(\.[0-9]{1,2})?" title="Enter a valid number" required>
+								</div>
+								<small class="text-danger" th:if="${#fields.hasErrors('price')}"
+									th:errors="*{price}"></small>
+							</div>
+
+							<div class="form-group">
+								<label for="image">Game Image</label>
+								<input type="file" class="form-control-file" id="image" name="image" accept="image/*">
+							</div>
+
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">Add Game</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Modal to confirm the deletion of a game -->
+		<div th:each="game : ${games}" th:id="'deleteConfirmationModal-' + ${game.id}" class="modal fade" tabindex="-1"
+			role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Confirm Deletion</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to delete this game?</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+						<button type="button" class="btn btn-danger" th:onclick="'deleteGame(' + ${game.id} + ')'"
+							data-dismiss="modal">Confirm Deletion</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+		<script th:inline="javascript">
+			function deleteGame(gameId) {
+				window.location.replace('/gameStore/delete?id=' + gameId);
+			}
+
+			function goBack() {
+				window.history.back();
+			}
+		</script>
+
+</body>
+
+</html>

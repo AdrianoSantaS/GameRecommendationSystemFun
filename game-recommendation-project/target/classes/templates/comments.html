@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Comments for Game</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+        }
+
+        .comment-box {
+            border: 1px solid white;
+            background-color: #2a9d8f;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .counter-box {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .counter-card {
+            background-color: #264653;
+            border: 1px solid #006d77;
+            padding: 15px;
+            flex: 1;
+            margin: 0 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .likes {
+            background-color: #007bff; 
+        }
+
+        .dislikes {
+            background-color: #dc3545; 
+        }
+
+        .comments {
+            background-color: #007bff; 
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2 class="mt-4 mb-4" th:text="'Comments for ' + ${game.nameGame}"></h2>
+
+        <button class="btn btn-secondary mb-4" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+
+        <!-- Counts Likes, Dislikes e Comments -->
+        <div class="counter-box mb-4">
+            <div class="counter-card likes">
+                <h4>Likes</h4>
+                <p th:text="${likesCount != null ? likesCount : 0}">0</p>
+            </div>
+            <div class="counter-card dislikes">
+                <h4>Dislikes</h4>
+                <p th:text="${dislikesCount != null ? dislikesCount : 0}">0</p>
+            </div>
+            <div class="counter-card comments">
+                <h4>Comments</h4>
+                <p th:text="${commentsCount != null ? commentsCount : 0}">0</p>
+            </div>
+        </div>
+
+        <div th:each="feedback : ${feedbacks}">
+            <div class="comment-box">
+                <p th:text="'User: ' + ${feedback.client.name}"></p>
+                <p th:text="'Type: ' + (${feedback.likeCount != null} ? 'Like' : 'Dislike')"></p>
+                <p th:text="'Comment: ' + ${feedback.comment}"></p>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    </div>
+
+    <script th:inline="javascript">
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+</body>
+
+</html>

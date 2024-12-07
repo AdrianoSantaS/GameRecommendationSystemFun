@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Login</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+	<style>
+		body {
+			background-color: #f8f9fa;
+		}
+
+		.login-container {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 300px;
+			padding: 20px;
+			border: 1px solid #ced4da;
+			border-radius: 5px;
+			background-color: #fff;
+		}
+
+		.form-group {
+			margin-bottom: 15px;
+		}
+
+		.btn-login {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="login-container">
+		<h2 class="text-center mb-4">Login</h2>
+
+		<form th:action="@{/login}" method="post">
+			<div class="form-group">
+				<label for="username">Username</label>
+				<input type="text" class="form-control" id="username" name="username" required>
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" class="form-control" id="password" name="password" required>
+			</div>
+			<button type="submit" class="btn btn-primary btn-login">Login</button>
+		</form>
+
+		<div class="text-center mt-3">
+			<p>Don't have an account? <a href="#" data-toggle="modal" data-target="#registerModal">Register</a></p>
+		</div>
+	</div>
+
+	<!-- Modal to register a new user -->
+	<div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="registerModalLabel">Register</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form th:action="@{/register}" method="post" onsubmit="registerUser()">
+						<div class="form-group">
+							<label for="name">Name</label>
+							<input type="text" class="form-control" id="name" name="name" required>
+						</div>
+						<div class="form-group">
+							<label for="phone">Phone</label>
+							<input type="number" class="form-control" id="phone" name="phone" required>
+						</div>
+						<div class="form-group">
+							<label for="address">Address</label>
+							<input type="text" class="form-control" id="address" name="address" required>
+						</div>
+						<div class="form-group">
+							<label for="login">Username</label>
+							<input type="text" class="form-control" id="login" name="login" required>
+						</div>
+						<div class="form-group">
+							<label for="password">Password</label>
+							<input type="password" class="form-control" id="password" name="password" required>
+						</div>
+
+						<input type="hidden" name="typePermission" value="USER" />
+
+						<button type="submit" class="btn btn-primary">Register</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div th:if="${successMessage}" class="alert alert-success" role="alert" style="margin-top: 10px;">
+		<span th:text="${successMessage}"></span>
+	</div>
+	<div th:if="${error}" class="alert alert-danger" role="alert" style="margin-top: 10px;">
+		<span th:text="${error}"></span>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+	<script>
+		
+		document.querySelector('form[th\\:action="@{/login}"]').onsubmit = function (event) {
+			const username = document.getElementById('username').value.trim();
+			const password = document.getElementById('password').value.trim();
+
+			if (!username || !password) {
+				alert('Please fill out all fields for login.');
+				event.preventDefault();
+			}
+		};
+
+		document.querySelector('#registerModal form').onsubmit = function (event) {
+			const name = document.getElementById('name').value.trim();
+			const phone = document.getElementById('phone').value.trim();
+			const address = document.getElementById('address').value.trim();
+			const login = document.getElementById('login').value.trim();
+			const password = document.getElementById('password').value.trim();
+
+			if (!name || !phone || !address || !login || !password) {
+				alert('Please fill out all fields for registration.');
+				event.preventDefault();
+			} 
+		};
+		
+		
+	</script>
+
+</body>
+
+</html>
